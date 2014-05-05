@@ -1,18 +1,10 @@
 ---
 layout: default
+author: wesyoung
 ---
 
-## Quickstart 
-```bash
-$ ./configure --prefix=/opt/cif
-$ make
-$ make test
-$ sudo make install
-$ export $PATH=/opt/cif/bin:$PATH
-$ /opt/cif/bin/cif-router -d
-$ /opt/cif/bin/cif-smrt -R 0 -d
-$ /opt/cif/bin/cif -d -q example.com
-```
+## Quickstart
+See our [Quickstart Guide](https://github.com/csirtgadgets/massive-octo-spice/wiki/InstallSource) to install from scratch.
 
 ## Downloads
 <a class='btn btn-primary btn-lg' href='{{ codeurl }}/releases'>Releases</a>
