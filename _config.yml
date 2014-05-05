@@ -36,3 +36,5 @@ redcarpet:
         'tables',
         'hardwrap'
     ]
+gems:
+    - jekyll-mentions
