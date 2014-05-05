@@ -25,10 +25,7 @@
 
             <div class=row-fluid>
                     <div id=navigation class=span2>
-                        {% assign post_count = site.posts|size %}
-                        {% if site.navigation != 0 and site.navigation == 1 or post_count > 0 %}
-                            {% include navigation.html %}
-                        {% endif %}
+                        {% include navigation.html %}
                     </div>
 
                     <div id=content class=span10>
