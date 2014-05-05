@@ -1,12 +1,15 @@
 # Site title and subtitle. This is used in _includes/header.html
-title: 'Collective Intelligence Framework'
+title: 'the Collective Intelligence Framework'
 subtitle: "massive-octo-spice"
 
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
-siteurl: 'https://csirtgadgets.github.io/massive-octo-spice' 
+siteurl: 'https://docs.csirtgadgets.org/massive-octo-spice' 
 baseurl: '/massive-octo-spice'
+assetsurl: 'https://csirtgadgets.github.io'
 #siteurl: 'http://0.0.0.0:4000'
+
+permalink: none
 
 # Exclude non-site files
 exclude: ['bin', 'README.md']
