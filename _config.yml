@@ -23,7 +23,8 @@ sections: [
     ['dev', 'Developers'],
     ['post', 'Posts'],
     ['plat', 'Platform'],
-    ['api', 'API']
+    ['api', 'API'],
+    ['faq', 'FAQ'],
 ]
 
 # Use the redcarpet Markdown renderer
