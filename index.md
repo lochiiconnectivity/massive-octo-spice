@@ -19,7 +19,7 @@ $ /opt/cif/bin/cif -d -q example.com
 <a class='btn btn-primary btn-lg' href='{{ codeurl }}/tarball/master'>TAR File</a>
 <a class='btn btn-primary btn-lg' href='{{ codeurl }}/zipball/master'>ZIP File</a>
 
-## Authors and Contributors
+## Core Team 
 @giovino, @jeffmurphy and @wesyoung
 
 ## Recent Posts
