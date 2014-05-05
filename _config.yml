@@ -5,6 +5,22 @@ subtitle: "massive-octo-spice"
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
 siteurl: 'https://csirtgadgets.github.io/massive-octo-spice' 
+#siteurl: 'http://0.0.0.0:4000'
+
+# Exclude non-site files
+exclude: ['bin', 'README.md']
+
+post_limit: 7 
+
+sections: [
+    ['doc', 'Documentation'],
+    ['tut', 'Tutorial'],
+    ['ref', 'Reference'],
+    ['dev', 'Developers'],
+    ['post', 'Posts'],
+    ['plat', 'Platform'],
+    ['api', 'API']
+]
 
 # Use the redcarpet Markdown renderer
 markdown: redcarpet
