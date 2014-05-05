@@ -4,11 +4,13 @@ subtitle: "massive-octo-spice"
 
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
-siteurl: 'http://docs.csirtgadgets.org/massive-octo-spice' 
-baseurl: '/massive-octo-spice'
+#baseurl: '/massive-octo-spice'
+baseurl: '/'
 assetsurl: 'https://csirtgadgets.github.io'
-#siteurl: 'http://0.0.0.0:4000'
+#siteurl: 'http://docs.csirtgadgets.org/massive-octo-spice' 
+siteurl: 'http://0.0.0.0:4000'
 
+navigation: 0
 permalink: none
 
 # Exclude non-site files
@@ -29,16 +31,5 @@ sections: [
 
 # Use the redcarpet Markdown renderer
 markdown: redcarpet
-redcarpet:
-    extensions: [
-        'no_intra_emphasis',
-        'fenced_code_blocks',
-        'autolink',
-        'strikethrough',
-        'superscript',
-        'with_toc_data',
-        'tables',
-        'hardwrap'
-    ]
 gems:
     - jekyll-mentions
