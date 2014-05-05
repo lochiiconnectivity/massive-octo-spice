@@ -9,7 +9,8 @@
       </button>
       <a class="navbar-brand" href="{{ site.siteurl }}">the Collective Intelligence Framework</a>
     </div>
-
+    {% assign post_count = site.posts|size %}
+    {% if site.navigation != 0 and site.navigation == 1 or post_count > 0 %}
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
@@ -31,5 +32,6 @@
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
+    {% endif %}
   </div><!-- /.container-fluid -->
 </nav>
