@@ -5,6 +5,7 @@ subtitle: "massive-octo-spice"
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
 siteurl: 'https://csirtgadgets.github.io/massive-octo-spice' 
+baseurl: '/massive-octo-spice'
 #siteurl: 'http://0.0.0.0:4000'
 
 # Exclude non-site files
