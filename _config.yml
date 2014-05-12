@@ -1,6 +1,5 @@
 # Site title and subtitle. This is used in _includes/header.html
 title: 'the Collective Intelligence Framework'
-subtitle: "massive-octo-spice"
 
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
@@ -24,9 +23,6 @@ sections: [
     ['ref', 'Reference'],
     ['dev', 'Developers'],
     ['post', 'Posts'],
-    ['plat', 'Platform'],
-    ['api', 'API'],
-    ['faq', 'FAQ'],
 ]
 
 # Use the redcarpet Markdown renderer
