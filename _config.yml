@@ -3,11 +3,9 @@ title: 'the Collective Intelligence Framework'
 
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/csirtgadgets/massive-octo-spice'
-#baseurl: '/massive-octo-spice'
-baseurl: '/'
+baseurl: '/massive-octo-spice'
 assetsurl: 'https://csirtgadgets.github.io'
-#siteurl: 'http://docs.csirtgadgets.org/massive-octo-spice' 
-siteurl: 'http://0.0.0.0:4000'
+siteurl: 'http://docs.csirtgadgets.org/massive-octo-spice' 
 
 navigation: 0
 permalink: none
