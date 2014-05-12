@@ -10,19 +10,6 @@ siteurl: 'http://docs.csirtgadgets.org/massive-octo-spice'
 navigation: 0
 permalink: none
 
-# Exclude non-site files
-exclude: ['bin', 'README.md']
-
-post_limit: 7 
-
-sections: [
-    ['doc', 'Documentation'],
-    ['tut', 'Tutorial'],
-    ['ref', 'Reference'],
-    ['dev', 'Developers'],
-    ['post', 'Posts'],
-]
-
 # Use the redcarpet Markdown renderer
 markdown: redcarpet
 gems:
