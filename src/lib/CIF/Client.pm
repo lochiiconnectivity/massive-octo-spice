@@ -3,7 +3,7 @@ package CIF::Client;
 use strict;
 use warnings;
 
-use CIF qw/init_logging $Logger/;
+use CIF qw/init_logging $Logger normalize_timestamp/;
 use CIF::Message;
 use CIF::Client::BrokerFactory;
 use CIF::FormatFactory;
@@ -143,6 +143,22 @@ sub search {
     my $self = shift;
     my $args = shift;
     
+    my $filters = $args->{'Filters'};
+    if($filters->{'starttime'}){
+    	unless($filters->{'starttime'} =~ /^\d+$/){
+    		$filters->{'starttime'} =  DateTime::Format::DateParse->parse_datetime($filters->{'starttime'});
+    		$filters->{'starttime'} = $filters->{'starttime'}->epoch.'000'; #millis
+    	}
+    }
+    
+    if($filters->{'tags'} && $filters->{'tags'} =~ /,/){
+    	$filters->{'tags'} = [split(/,/,$filters->{'tags'})];
+    }
+    
+    if($filters->{'groups'} && $filters->{'groups'} =~ /,/){
+    	$filters->{'groups'} = [split(/,/,$filters->{'groups'})];
+    }
+    
     my $msg;
     if($args->{'Id'}){
     	$msg = CIF::Message->new({
@@ -157,15 +173,15 @@ sub search {
 	        mtype       => 'request',
 	        Token       => $args->{'Token'} || $self->Token(),
 	        Query       => $args->{'Query'},
-	        confidence  => $args->{'confidence'},
-	        limit       => $args->{'limit'},
-	        group       => $args->{'group'},
-	        Tags        => $args->{'Tags'},
+	        Filters    => $filters,
 	    });
     }
 
     $msg = $self->send($msg);
-    my $stype = $msg->{'stype'} || $msg->{'@stype'};
+    
+    #$Logger->debug(Dumper($msg));
+    
+    my $stype = $msg->{'stype'} || $msg->{'stype'};
     return $msg->{'Data'} if($stype eq 'failure');
     
     unless($args->{'nodecode'}){
@@ -181,7 +197,7 @@ sub send {
     $Logger->debug('encoding...');
 
     $msg = $self->encode({ data => $msg });
-
+    
     $Logger->debug('sending upstream...');
     
     $msg = $self->get_broker_handle()->send($msg);

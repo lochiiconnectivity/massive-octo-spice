@@ -13,6 +13,7 @@ use CIF;
 require CIF::Client;
 use Mojolicious::Lite;
 use Time::HiRes qw(gettimeofday);
+use Module::Refresh;
 use Data::Dumper;
 
 use constant REMOTE_DEFAULT  => 'tcp://localhost:' . CIF::DEFAULT_PORT();
@@ -28,6 +29,7 @@ helper auth => sub {
         $self->param('token');
 };
 
+## TODO -- make this more dynamic (eg: /cif/v2...)
 get '/' => sub {
     shift->redirect_to('/v2/help');
 } => 'help';
@@ -55,9 +57,6 @@ get '/:version/observables/:observable' => sub {
 	
 	my $token      = $self->param('token');
     my $query      = $self->param('observable');
-    my $limit      = $self->param('limit') || 500;
-    my $confidence = $self->param('confidence') || 0;
-    my $group      = $self->param('group') || 'everyone';
     
     my $res = $cli->search({
         Token      => $token,
@@ -71,17 +70,25 @@ get '/:version/observables/:observable' => sub {
 get '/:version/observables' => sub {
     my $self       = shift;
     
-    my $token      = $self->param('token');
-    my $query      = $self->param('q');
-    my $limit      = $self->param('limit') || 500;
-    my $confidence = $self->param('confidence') || 0;
-    my $group      = $self->param('group') || 'everyone';
+    my $token      	= $self->param('token');
+    my $query      	= $self->param('q') || $self->param('observable');
     
     my $res = $cli->search({
-        Token      => $token,
-        Query      => $query,
-        limit      => $limit,
-        confidence => $confidence,
+        Token      	=> $token,
+        Query      	=> $query,
+        Filters     => {
+        	otype          => $self->param('otype')        || undef,
+        	cc             => $self->param('cc')           || undef,
+        	confidence     => $self->param('confidence')   || 0,
+        	starttime      => $self->param('starttime')    || undef,
+        	groups         => $self->param('groups')       || undef,
+        	limit          => $self->param('limit')        || undef,
+        	tags           => $self->param('tags')         || undef,
+        	applications   => $self->param('applications') || undef,
+        	asns           => $self->param('asns')         || undef,
+        	providers      => $self->param('providers')    || undef,
+        	## TODO - TLP?
+        },
     });
 
     $self->render( json => $res );
@@ -135,6 +142,11 @@ __DATA__
                 </tr>
                 <tr>
                     <td class="striped value">
+                        <pre>GET /<%= $API_VERSION %>/observables?token=1234&cc=RU&tags=scanner,botnet</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="striped value">
                         <pre>GET /<%= $API_VERSION %>/observables/dd7610037ea0c3d68dd73634bee223bbdaedce14c707cbadbb1f90688d6312dd?token=1234</pre>
                     </td>
                 </tr>
@@ -143,6 +155,7 @@ __DATA__
                         <pre>PUT /<%= $API_VERSION %>/observables/new?token=1234 # body is JSON string</pre>
                     </td>
                 </tr>
+                
             </table>
        </div>
        </div>
@@ -162,7 +175,10 @@ __DATA__
                 % { param => 'token', type => 'STRING', example => '1234' }, 
                 % { param => 'limit', type => 'INT32', example => '500' },
                 % { param => 'confidence', type => 'INT32', example => '65' },
-                % { param => 'group', type => 'STRING', example => 'group2' },
+                % { param => 'groups', type => 'STRING', example => 'group1,group2' },
+                % { param => 'cc', type => 'STRING', example => 'RU' },
+                % { param => 'tags', type => 'STRING', example => 'botnet,scanner' },
+                % { param => 'otype', type => 'STRING', example => 'ipv4,fqdn' },
                 % ];
                 % foreach my $p (@{$enabled_params}){
                 <tr align="left">

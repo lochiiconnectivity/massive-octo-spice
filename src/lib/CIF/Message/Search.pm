@@ -5,50 +5,16 @@ use warnings;
 
 use Mouse;
 
-has 'confidence'    => (
-    is      => 'ro',
-    isa     => 'Int',
-    reader  => 'get_confidence',
-);
-
-has 'limit' => (
-    is      => 'ro',
-    isa     => 'Int',
-    reader  => 'get_limit',
-);
-
-has 'group' => (
-    is      => 'ro',
-    isa     => 'Str',
-    reader  => 'get_group',
-    coerce  => 1,
-);
-
-has 'Tags'  => (
-    is      => 'ro',
-    isa     => 'ArrayRef',
-    reader  => 'get_tags',
-    coerce  => 1,
-);
-
 has 'Id'	=> (
-	is		=> 'ro',
-	isa		=> 'Str',
-	reader	=> 'get_Id',
+	is     => 'rw',
+	reader => 'get_Id',
+	writer => 'set_Id',
 );
 
 has 'Query' => (
     is          => 'rw',
-    isa         => 'Str',
     reader      => 'get_Query',
     writer      => 'set_Query',
-);
-
-has 'Id' => (
-    is      => 'rw',
-    isa     => 'Str',
-    reader  => 'get_Id',
-    writer  => 'set_Id',
 );
 
 has 'Results'   => (
@@ -57,7 +23,12 @@ has 'Results'   => (
     reader  => 'get_Results',
     writer  => 'set_Results',
 );
-   
+
+has 'Filters' => (
+    is      => 'ro',
+    reader  => 'get_Filters',
+);
+	   
 sub understands {
     my $self = shift;
     my $args = shift;
@@ -66,30 +37,14 @@ sub understands {
     return 1 if($args->{'rtype'} eq 'search');
 }
 
-around BUILDARGS => sub {
-    my $orig = shift;
-    my $self = shift;
-    my $args = shift;
-    
-    $args->{'group'}        = '' unless($args->{'group'});
-    $args->{'Tags'}         = [] unless($args->{'Tags'});
-    $args->{'confidence'}   = 0 unless(defined($args->{'confidence'}));
-    $args->{'limit'}        = 500 unless(defined($args->{'limit'}));
-    
-    
-    return $self->$orig($args);
-};
-
 sub TO_JSON {
     my $self = shift;
 
     my $ret = {
-        'confidence'   	=> $self->get_confidence(),
-        'limit'        	=> $self->get_limit(),
-        'group'        	=> $self->get_group(),
         'Query'         => $self->get_Query(),
         'Id'			=> $self->get_Id(),
         'Results'       => $self->get_Results(),
+        'Filters'       => $self->get_Filters(),
     };
     return $ret;
 }

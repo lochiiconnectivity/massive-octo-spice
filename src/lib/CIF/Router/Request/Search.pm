@@ -68,27 +68,20 @@ sub process {
     if($data->{'Query'}){
     	return -1 unless($self->check($data->{'Query'}));
     } else {
-    	return -1 unless $data->{'Id'};
+    	return -1 unless ($data->{'Id'} || $data->{'Filters'});
     }
+    
+    $Logger->debug(Dumper($msg));
    
-    my $results = $self->get_storage_handle()->process({
-        Query       => $data->{'Query'},
-        Id			=> $data->{'Id'},
-        confidence  => $data->{'confidence'},
-        limit       => $data->{'limit'},
-        group       => $data->{'group'},
-    });
+    my $results = $self->get_storage_handle()->process($data);
    
-    if($data->{'Query'}){
+    if($data->{'Query'} && $data->{'Query'} ne 'all'){
         $self->_log_search($msg) unless($data->{'nolog'});
     }
     
     return (-1) unless(ref($results) eq "ARRAY");
 
     my $resp = CIF::Message::Search->new({
-        limit       => $data->{'limit'},
-        confidence  => $data->{'confidence'},
-        group       => $data->{'group'},
         Results     => $results,
     });
     if($data->{'Query'}){

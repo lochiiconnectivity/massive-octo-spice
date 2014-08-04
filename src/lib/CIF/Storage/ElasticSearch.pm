@@ -14,6 +14,7 @@ use Try::Tiny;
 use Carp::Assert;
 use CIF qw/hash_create_random is_hash_sha256/;
 use Data::Dumper;
+use JSON qw(encode_json);
 
 with 'CIF::Storage';
 
@@ -133,7 +134,7 @@ sub process {
     return -1 unless($self->check_handle());
     
     my $ret;
-    if($args->{'Query'} || $args->{'Id'}){
+    if($args->{'Query'} || $args->{'Id'} || $args->{'Filters'}){
         $Logger->debug('searching...');
         $ret = $self->_search($args);
     } elsif($args->{'Observables'}){
@@ -153,38 +154,109 @@ sub _search {
     
     my $groups = $args->{'groups'} || ['everyone'];
     $groups = [$groups] unless(ref($groups) && ref($groups) eq 'ARRAY');
-
-    foreach (@$groups) {
-        $_ = { "term" => { 'group' => $_ } };
+    
+    my ($q,$terms,$ranges);
+       
+    if($args->{'Id'}){
+    	$terms->{'id'} = [$args->{'Id'}];
+    } elsif($args->{'Query'}) {
+    	if($args->{'Query'} ne 'all'){
+    		$terms->{'observable'} = [$args->{'Query'}];
+    	}
     }
     
-    my $q;
-    if($args->{'Id'}){
-    	$q = { "term" => { 'id' => $args->{'Id'} } };
+    my $filters = $args->{'Filters'};
+    
+    if($filters->{'otype'}){
+    	$terms->{'otype'} = [$filters->{'otype'}];
+	}
+	
+	if($filters->{'cc'}){
+		$terms->{'cc'} = [uc($filters->{'cc'})];
+	}
+    
+    if($filters->{'confidence'}){
+    	$ranges->{'confidence'}->{'gte'} = $filters->{'confidence'};
+    }
+    
+    if($filters->{'starttime'}){
+    	$ranges->{'reporttime'}->{'gte'} = $filters->{'starttime'};
+    }
+    
+    if($filters->{'tags'}){
+    	$filters->{'tags'} = [$filters->{'tags'}] unless(ref($filters->{'tags'}) eq 'ARRAY');
+    	$terms->{'tags'} = $filters->{'tags'};
+    }
+    
+    if($filters->{'applications'}){
+    	$filters->{'applications'} = [$filters->{'applications'}] unless(ref($filters->{'applications'}) eq 'ARRAY');
+    	$terms->{'application'} = $filters->{'applications'};
+    }
+    
+    if($filters->{'asns'}){
+    	$filters->{'asns'} = [$filters->{'asns'}] unless(ref($filters->{'asns'}));
+    	$terms->{'asn'} = $filters->{'asns'}
+    }
+    
+    if($filters->{'providers'}){
+        $filters->{'providers'} = [$filters->{'providers'}] unless(ref($filters->{'providers'}));
+        $terms->{'provider'} = $filters->{'providers'}
+    }
+    
+    ## TODO asn_desc TERM => ***
+    
+    if($filters->{'groups'}){
+        $filters->{'groups'} = [$filters->{'groups'}] unless(ref($filters->{'groups'}) eq 'ARRAY');
     } else {
-	    $q = { "term" => { "observable" => $args->{'Query'} } };
+        $filters->{'groups'} = ['everyone'];
+    }
+    
+    $terms->{'group'} = $filters->{'groups'}; ## TODO re-create es.map with groups [] capable array (similar to peers?)
+    
+    my (@and,@or);
+    
+    if($terms){
+		foreach (keys %$terms){
+			if($_ eq 'tags'){
+				my @or;
+                foreach my $e (@{$terms->{$_}}){
+                    push(@or, { term => { $_ => [$e] } } );
+                 }
+                 push(@and,{ 'or' => \@or });
+            } elsif($_ eq 'group') { ##TODO
+                my @or;
+                foreach my $e (@{$terms->{$_}}){
+                	push(@or, { term => { $_ => [$e] } } );
+                }
+                push(@and, { 'or' => \@or });
+            } else {
+		      push(@and, { term => { $_ => $terms->{$_} } } );	
+            }
+		}
+	}
+    
+    if($ranges){
+    	foreach (keys %$ranges){
+    		push(@and, { range => { $_ => $ranges->{$_} } } );
+    	}
     }
     
     $q = {
 		query => {
 	    	filtered    => {
-	        	filter  => { "and" => [ $q ], }
+	        	filter  => {
+	        		'and' => \@and,
+	        	}
 	        },
 	    }
 	};
-    if($args->{'confidence'}){
-        push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
-            { range => { "confidence" => { 'from' => $args->{'confidence'}, 'to' => DEFAULT_MAX_CONFIDENCE() } } }
-        );
-    }
-    
-    push(@{$q->{'query'}->{'filtered'}->{'filter'}->{'and'}},
-        filter => { "or" => $groups },
-    );
+	
+	my $j = JSON->new();
+    $Logger->debug($j->pretty->encode($q));
     
     my %search = (
         index   => $self->get_index_search(),
-        size    => $args->{'limit'} || DEFAULT_LIMIT(),
+        size    => $filters->{'limit'} || DEFAULT_LIMIT(),
         body    => $q,
     );
     
